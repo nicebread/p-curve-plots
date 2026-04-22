@@ -27,7 +27,7 @@ plot_h0 <- function() {
         # H0 density line (y = 1)
         geom_segment(aes(x = 0, xend = 1, y = 1, yend = 1), color = "red", linewidth = 1.2) +
         # Text annotation for 5%
-        annotate("text", x = 0.025, y = 0.5, label = "5%", color = "white", fontface = "bold", angle = 90, size = 4) +
+        annotate("text", x = 0.025, y = 0.5, label = "5%", color = "white", fontface = "bold", angle = 90, size = 6) +
         scale_x_continuous(limits = c(0, 1), breaks = seq(0, 1, by = 0.2), labels = function(x) sprintf("%.1f", x)) +
         scale_y_continuous(limits = c(0, 5)) +
         labs(x = "p value", y = "Density") +
@@ -60,7 +60,7 @@ pcurve_plot <- function(power = .10, p.max = .9999, ymax = 5, sig.region = FALSE
     p_base <- ggplot(df, aes(x = p, y = density)) +
         geom_area(fill = "#DFFABE", color = "black", linetype = "dotted", linewidth = 0.5, outline.type = "full") +
         geom_line(color = "green", linewidth = 1.2) +
-        annotate("segment", x = 0, xend = p.max, y = 1, yend = 1, color = "red", linetype = "dashed", linewidth = 0.8) +
+        annotate("segment", x = 0.01, xend = p.max, y = 1, yend = 1, color = "red", linetype = "dashed", linewidth = 0.8) +
         scale_x_continuous(limits = c(0, round(p.max, 1)), breaks = seq(0, 1, by = 0.2), labels = function(x) sprintf("%.1f", x)) +
         scale_y_continuous(limits = c(0, ymax)) +
         labs(x = "p value", y = "Density") +
@@ -75,7 +75,7 @@ pcurve_plot <- function(power = .10, p.max = .9999, ymax = 5, sig.region = FALSE
             annotate("text",
                 x = 0.025, y = 0,
                 label = paste0(round(power * 100), "%"),
-                color = "black", fontface = "bold", angle = 90, hjust = -0.1, size = 4
+                color = "black", fontface = "bold", angle = 90, hjust = -0.1, size = 6
             )
     }
 
