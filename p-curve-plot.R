@@ -161,3 +161,35 @@ plot_special_2 <- function(power = .60, p.max = 0.2, ymax = 50) {
 }
 
 print(plot_special_2())
+
+
+# =====================================================================
+# Validation: Replication of rpsychologist.com
+# =====================================================================
+# This test verifies our mathematical implementation of the p-value density
+# under H1 (dpvalue) against the interactive visualization by
+# Kristoffer Magnusson (https://rpsychologist.com/d3/pdist/).
+#
+# Scenario:
+# - Independent t-test, d = 0.5, n = 20 per group
+# - Resulting Power = 35.26 %
+#
+# Verification 1 (Visual):
+# The curve should cross the red p=0.05 line at exactly y ≈ 3.1.
+#
+# Verification 2 (Mathematical):
+# The integral of the density function between 0.10 and 0.20 must
+# equal the "p-values in selection" from the app: 14.46%.
+
+p_validation <- pcurve_plot(power = 0.3526, p.max = 0.9999, ymax = 25) +
+    geom_vline(xintercept = 0.05, color = "red", linetype = "dashed", linewidth = 1) +
+    annotate("rect", xmin = 0.10, xmax = 0.20, ymin = 0, ymax = Inf, fill = "red", alpha = 0.2) +
+    scale_x_continuous(breaks = seq(0, 1, by = 0.1), labels = function(x) sprintf("%.1f", x)) +
+    scale_y_continuous(breaks = seq(0, 25, by = 0.5)) +
+    coord_cartesian(xlim = c(0, 1), ylim = c(0, 3)) +
+    ggtitle("Validation: Power = 35.26% (rpsychologist.com)")
+
+print(p_validation)
+
+# Output mathematical verification (should be ~0.1446)
+print(integrate(dpvalue, lower = 0.10, upper = 0.20, power = 0.3526))
