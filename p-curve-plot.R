@@ -58,7 +58,7 @@ plot_h0 <- function(stage = 1) {
     # Stage 3: Dart symbols (On top of Stage 1 lines)
     if (stage >= 3) {
         dart_data <- data.frame(
-            x = c(0.09, 0.29, 0.50, 0.58, 0.74, 0.89),
+            x = c(0.20, 0.29, 0.50, 0.58, 0.74, 0.89),
             y = c(1.05, 1.05, 1.05, 1.05, 1.05, 1.05),
             image = "dart.png"
         )
@@ -69,7 +69,7 @@ plot_h0 <- function(stage = 1) {
                 mapping = aes(x = x, y = y, image = image),
                 inherit.aes = FALSE,
                 asp = 1,
-                size = 0.25
+                size = 0.2
             )
     }
 
@@ -116,7 +116,8 @@ pcurve_plot <- function(power = .10, p.max = .9999, ymax = 5, sig.region = FALSE
             limits = c(0, round(p.max, 1)), breaks = seq(0, 1, by = 0.2),
             labels = function(x) sprintf("%.1f", x)
         ) +
-        scale_y_continuous(limits = c(0, ymax)) +
+        scale_y_continuous(expand = c(0, 0)) +
+        coord_cartesian(ylim = c(0, ymax)) +
         labs(x = "p value", y = "Density") +
         guides(x = guide_axis(cap = "both"), y = guide_axis(cap = "both")) +
         theme_classic(base_size = 14)
@@ -195,6 +196,7 @@ print(pcurve_plot(.80, ymax = 30, sig.region = TRUE, callout = TRUE))
 plot_special_1 <- function(power = .65, p.max = .9999, ymax = 22) {
     df <- data.frame(p = seq(.001, p.max, length.out = 1000))
     df$density <- dpvalue(df$p, power = power)
+    df <- df[df$density <= ymax, ]
 
     df_sig <- df[df$p >= 0.03 & df$p <= 0.05, ]
 
@@ -203,10 +205,11 @@ plot_special_1 <- function(power = .65, p.max = .9999, ymax = 22) {
         geom_area(data = df_sig, fill = "#93F759", color = "black", linetype = "dotted", linewidth = 0.5, outline.type = "full") +
         geom_line(color = "green", linewidth = 1.2) +
         scale_x_continuous(limits = c(0, round(p.max, 1)), breaks = seq(0, 1, by = 0.2), labels = function(x) sprintf("%.1f", x)) +
-        scale_y_continuous(limits = c(0, ymax)) +
+        scale_y_continuous(limits = c(0, ymax), expand = c(0, 0)) +
         labs(x = "p value", y = "Density") +
         guides(x = guide_axis(cap = "both"), y = guide_axis(cap = "both")) +
         theme_classic(base_size = 14)
+
     return(p)
 }
 
@@ -238,6 +241,8 @@ print(plot_special_1())
 plot_special_2 <- function(power = .60, p.max = 0.2, ymax = 50, callout = FALSE, darts_bin1 = 5, darts_bin2 = 13, publication_bias = FALSE) {
     df <- data.frame(p = seq(.001, p.max, length.out = 1000))
     df$density <- dpvalue(df$p, power = power)
+
+    df <- df[df$density <= ymax, ]
 
     df_sig1 <- df[df$p >= 0.025 & df$p <= 0.05, ]
     df_sig2 <- df[df$p <= 0.025, ]
@@ -289,7 +294,7 @@ plot_special_2 <- function(power = .60, p.max = 0.2, ymax = 50, callout = FALSE,
         if (length(x_darts) > 0) {
             dart_df <- data.frame(x = x_darts, y = y_darts, image = "dart.png")
             p <- p +
-                ggimage::geom_image(data = dart_df, mapping = aes(x = x, y = y, image = image), inherit.aes = FALSE, size = 0.12)
+                ggimage::geom_image(data = dart_df, mapping = aes(x = x, y = y, image = image), inherit.aes = FALSE, size = 0.08)
         }
 
         # 2. Text labels below the areas
