@@ -242,7 +242,13 @@ plot_special_2 <- function(power = .60, p.max = 0.2, ymax = 50, callout = FALSE,
     df <- data.frame(p = seq(.001, p.max, length.out = 1000))
     df$density <- dpvalue(df$p, power = power)
 
-    df <- df[df$density <= ymax, ]
+    # Handle y-axis overflow by interpolating the exact intersection point at ymax
+    if (any(df$density > ymax)) {
+      idx <- which.max(df$density <= ymax)
+      p_exact <- df$p[idx - 1] + (ymax - df$density[idx - 1]) * (df$p[idx] - df$p[idx - 1]) / (df$density[idx] - df$density[idx - 1])
+      df <- df[df$density <= ymax, ]
+      df <- rbind(data.frame(p = p_exact, density = ymax), df)
+    }
 
     df_sig1 <- df[df$p >= 0.025 & df$p <= 0.05, ]
     df_sig2 <- df[df$p <= 0.025, ]
